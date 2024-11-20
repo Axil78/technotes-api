@@ -2,23 +2,33 @@ const allowedOrigins = require('./allowedOrigins');
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // In development, allow all origins (you can change this as needed)
         if (process.env.NODE_ENV === 'development') {
-            callback(null, true);  // Allow all origins in development
+            // Allow all origins during development for easy testing
+            callback(null, true);
         } else if (allowedOrigins.includes(origin) || !origin) {
-            // Allow requests from allowed origins or requests with no origin (like Postman or mobile apps)
+            // Allow requests from allowed origins or requests with no origin (e.g., Postman)
             callback(null, true);
         } else {
-            // Log blocked origins for debugging
+            // Block requests from disallowed origins and log them
             console.error(`Blocked by CORS: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,          // Allow credentials (cookies, headers)
-    optionsSuccessStatus: 200,  // For legacy browsers that choke on 204
-    allowedHeaders: ['Content-Type', 'Authorization'], // Ensure the headers you want are allowed
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow specific HTTP methods
+    credentials: true,          // Allow cookies and credentials to be sent
+    optionsSuccessStatus: 200,  // Respond with status 200 for preflight requests
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Accept',
+    ],                           // Allow headers required by the frontend
+    methods: [
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'OPTIONS',
+    ],                           // Support common HTTP methods
 };
 
-// Export the CORS configuration
 module.exports = corsOptions;
