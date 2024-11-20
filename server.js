@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Enable CORS with options
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Parse incoming JSON and cookies
 app.use(express.json());
