@@ -1,5 +1,5 @@
 require('dotenv').config();
-require('express-async-errors')
+require('express-async-errors');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -16,15 +16,30 @@ const PORT = process.env.PORT || 3500;
 console.log(`Environment: ${process.env.NODE_ENV}`);
 
 // Connect to MongoDB
-connectDB().catch(err => console.error("Database connection failed:", err));
+connectDB().catch(err => {
+    console.error("Database connection failed:", err);
+    process.exit(1);  // Exit if DB connection fails
+});
 
 // Middleware setup
 app.use(logger);
-app.use(cors(corsOptions));
+
+// Debug CORS (only log in development)
+if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+        console.log('Request Origin:', req.headers.origin); // Log request origin
+        next();
+    });
+}
+
+// Enable CORS with options
+app.use(cors());
+
+// Parse incoming JSON and cookies
 app.use(express.json());
 app.use(cookieParser());
 
-// Static file serving
+// Serve static files (adjust the static folder if needed)
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 // Route handlers
